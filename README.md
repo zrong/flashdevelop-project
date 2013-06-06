@@ -1,7 +1,7 @@
 FlashDevelop Project
 ======
 
-# Introduction
+## Introduction
 
 As a linuxer, I hate the Widows/DOS Batch file(.bat), but it uses a lot of .bat file in the official FlashDevelop project templates. I can use them, or delete them and write some new project projects in another scripting language.
 
