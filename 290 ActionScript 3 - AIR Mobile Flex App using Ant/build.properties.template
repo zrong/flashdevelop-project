@@ -1,0 +1,84 @@
+PROJECT_NAME=$(PROJECTID)
+
+# The project can have multiple main class file.
+MAIN_NAME=$(PROJECTID)
+MAIN_PATH=$(PACKAGESLASH)
+
+FLEX_HOME=$(FlexSDK)
+FLEX_FRAMEWORKS=${FLEX_HOME}/frameworks
+ANDROID_SDK=$(AppDir)/Tools/android
+ANDROID_PLATFORMTOOLS=${ANDROID_SDK}/platform-tools
+AIR_INSTALLER=${FLEX_HOME}/runtimes/air/android/device/runtime.apk
+
+# SRC - mxml and as files
+# CERT - p12 and mobileprovision files
+# BIN - output files
+# ANE - AIR Native Extension files
+# LIB - swc files
+# ICON - icon files
+# TEMP - package temporary files
+# DIST - APK and IPA files
+SRC_DIR=${basedir}/src
+CERT_DIR=${basedir}/cert
+BIN_DIR=${basedir}/bin
+ANE_DIR=${basedir}/ane
+LIB_DIR=${basedir}/libs
+ICON_DIR=${basedir}/icons
+TEMP_DIR=${basedir}/temp
+DIST_DIR=${basedir}/dist
+
+# About AIR application packaging
+# http://livedocs.adobe.com/flex/3/html/help.html?content=CommandLineTools_5.html#1035959
+# http://livedocs.adobe.com/flex/3/html/distributing_apps_4.html#1037515
+
+# NOTICE: all paths are relative to project root
+
+# Android packaging
+AND_CERT_NAME=$(PROJECTID)
+AND_CERT_PASS=fd
+AND_CERT_FILE=${CERT_DIR}/${AND_CERT_NAME}.p12
+AND_ICONS=${ICON_DIR}/android
+AND_DEV_SIGN=-storetype pkcs12 -keystore ${AND_CERT_FILE} -storepass ${AND_CERT_PASS}
+AND_DIST_SIGN=-storetype pkcs12 -keystore ${AND_CERT_FILE} -storepass ${AND_CERT_PASS}
+
+# iOS packaging
+IOS_DIST_CERT_FILE=
+IOS_DIST_CERT_PASS=
+IOS_DIST_PROVISION=${CERT_DIR}/${AND_CERT_NAME}-dist.mobileprovision
+IOS_DIST_SIGN=-storetype pkcs12 -keystore ${IOS_DIST_CERT_FILE} -storepass ${IOS_DIST_CERT_PASS} -provisioning-profile ${IOS_DIST_PROVISION}
+IOS_DEV_CERT_FILE=
+IOS_DEV_CERT_PASS=
+IOS_DEV_PROVISION=${CERT_DIR}/${AND_CERT_NAME}-dev.mobileprovision
+IOS_DEV_SIGN=-storetype pkcs12 -keystore ${IOS_DEV_CERT_FILE} -storepass ${IOS_DEV_CERT_PASS} -provisioning-profile ${IOS_DEV_PROVISION}
+IOS_ICONS=${ICON_DIR}/ios
+
+# Application descriptor
+APP_XML=${basedir}/application.xml
+
+# Flash Develop project file
+FD_PROJECT=${PROJECT_NAME}.as3proj
+
+
+# AIR Native Extensions(ANE)
+ANE_DIR_ARGS=-extdir ${ANE_DIR}
+
+# Your application ID (must match <id> of Application descriptor)
+APP_ID=air.$(PACKAGEDOT)$(PROJECTID)
+
+# Output packages
+DIST_NAME=${MAIN_NAME}
+
+# Debugging using a custom IP
+DEBUG_IP=192.168.18.22
+
+# ADL debugging parameters
+SCREEN_SIZE=NexusOne
+SCREEN_DPI=252
+
+# Default variable value
+var.type=apk
+var.target=-debug
+var.output=${DIST_DIR}/${DIST_NAME}${var.target}.apk
+var.options=-connect ${DEBUG_IP}
+var.signing=${AND_DEV_SIGN}
+var.fileordir=-C ${TEMP_DIR} .
