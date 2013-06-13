@@ -2,15 +2,14 @@
 <project>
   <!-- Output SWF options -->
   <output>
-    <movie disabled="False" />
+    <movie outputType="CustomBuild" />
     <movie input="" />
-    <movie path="bin\$(ProjectID).swf" />
+    <movie path="" />
     <movie fps="30" />
     <movie width="800" />
     <movie height="600" />
-    <movie version="3" />
-    <movie minorVersion="7" />
-    <movie platform="AIR" />
+    <movie version="11" />
+    <movie minorVersion="0" />
     <movie background="#FFFFFF" />
   </output>
   <!-- Other classes to be compiled into your SWF -->
@@ -38,33 +37,9 @@
     <option additional="" />
     <option customSDK="" />
   </build>
-  <!-- SWC Include Libraries -->
-  <includeLibraries>
-    <!-- example: <element path="..." /> -->
-  </includeLibraries>
-  <!-- SWC Libraries -->
-  <libraryPaths>
-    <!-- example: <element path="..." /> -->
-  </libraryPaths>
-  <!-- External Libraries -->
-  <externalLibraryPaths>
-    <!-- example: <element path="..." /> -->
-  </externalLibraryPaths>
-  <!-- Runtime Shared Libraries -->
-  <rslPaths>
-    <!-- example: <element path="..." /> -->
-  </rslPaths>
-  <!-- Intrinsic Libraries -->
-  <intrinsics>
-    <element path="Library\AS3\frameworks\Flex4" />
-  </intrinsics>
-  <!-- Assets to embed into the output SWF -->
-  <library>
-    <!-- example: <asset path="..." id="..." update="..." glyphs="..." mode="..." place="..." sharepoint="..." /> -->
-  </library>
   <!-- Class files to compile (other referenced classes will automatically be included) -->
   <compileTargets>
-    <compile path="src\$(PackageSlash)$(ProjectID).mxml" />
+    <compile path="" />
   </compileTargets>
   <!-- Paths to exclude from the Project Explorer tree -->
   <hiddenPaths>
@@ -77,7 +52,7 @@
   <!-- Other project options -->
   <options>
     <option showHiddenPaths="False" />
-    <option testMovie="Custom" />
+	<option testMovie="Custom" />
     <option testMovieCommand="Run.bat" />
   </options>
 </project>
