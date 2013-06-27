@@ -176,7 +176,7 @@
 			<os family="windows"/>
 		</condition>
 		<echo>OS family is ${os.name}. The adl is ${var.adl}.</echo>
-		<exec executable="${FLEX_HOME}/bin/adl.exe">
+            <exec executable="${var.adl}">
 			<arg line="-screensize ${SCREEN_SIZE}"/>
 			<arg line="-XscreenDPI ${SCREEN_DPI}"/>
 			<arg line="${APP_XML} ${BIN_DIR}"/>
