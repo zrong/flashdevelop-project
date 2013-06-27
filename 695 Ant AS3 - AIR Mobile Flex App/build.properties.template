@@ -58,9 +58,13 @@ APP_XML=${basedir}/application.xml
 # Flash Develop project file
 FD_PROJECT=${PROJECT_NAME}.as3proj
 
-
 # AIR Native Extensions(ANE)
 ANE_DIR_ARGS=-extdir ${ANE_DIR}
+
+# ANE id and file
+# The name of ANE file in ANE_DIR must be this form: "${extensionID}.ane"
+# Multiple ane files are separated by a space.
+ANE_IDS=org.zengrong.ane.AndroidANE us.sanguo.ane.SGExt
 
 # Your application ID (must match <id> of Application descriptor)
 APP_ID=air.$(PACKAGEDOT)$(PROJECTID)
@@ -76,9 +80,52 @@ SCREEN_SIZE=NexusOne
 SCREEN_DPI=252
 
 # Default variable value
-var.type=apk
-var.target=-debug
-var.output=${DIST_DIR}/${DIST_NAME}${var.target}.apk
-var.options=-connect ${DEBUG_IP}
-var.signing=${AND_DEV_SIGN}
-var.fileordir=-C ${TEMP_DIR} .
+var.profile=apk_debug
+#var.profile=apk_captive_runtime
+#var.profile=ipa_debug_interpreter
+#var.profile=ipa_ad_hoc
+#var.profile=ipa_app_store
+
+#====================
+# profiles
+#====================
+
+# Android apk-debug profile
+apk_debug.var.type=apk
+apk_debug.var.target=-debug
+apk_debug.var.output=${DIST_DIR}/${DIST_NAME}${apk_debug.var.target}.apk
+apk_debug.var.options=-connect ${DEBUG_IP}
+apk_debug.var.signing=${AND_DEV_SIGN}
+apk_debug.var.fileordir=-C ${TEMP_DIR} .
+
+# Android apk-captive-runtime profile
+apk_captive_runtime.var.type=apk
+apk_captive_runtime.var.target=-captive-runtime
+apk_captive_runtime.var.output=${DIST_DIR}/${DIST_NAME}${apk_captive_runtime.var.target}.apk
+apk_captive_runtime.var.options=
+apk_captive_runtime.var.signing=${AND_DIST_SIGN}
+apk_captive_runtime.var.fileordir=-C ${TEMP_DIR} .
+
+# iOS ipa-debug-interpreter profile
+ipa_debug_interpreter.var.type=ipa
+ipa_debug_interpreter.var.target=-debug-interpreter
+ipa_debug_interpreter.var.output=${DIST_DIR}/${DIST_NAME}${ipa_debug_interpreter.var.target}.ipa
+ipa_debug_interpreter.var.options=-connect ${DEBUG_IP} -sampler
+ipa_debug_interpreter.var.signing=${IOS_DEV_SIGN}
+ipa_debug_interpreter.var.fileordir=-C ${TEMP_DIR} .
+
+# iOS ipa-ad-hoc profile
+ipa_ad_hoc.var.type=ipa
+ipa_ad_hoc.var.target=-ad-hoc
+ipa_ad_hoc.var.output=${DIST_DIR}/${DIST_NAME}${ipa_ad_hoc.var.target}.ipa
+ipa_ad_hoc.var.options=
+ipa_ad_hoc.var.signing=${IOS_DEV_SIGN}
+ipa_ad_hoc.var.fileordir=-C ${TEMP_DIR} .
+
+# iOS ipa-app-store profile
+ipa_app_store.var.type=ipa
+ipa_app_store.var.target=-app-store
+ipa_app_store.var.output=${DIST_DIR}/${DIST_NAME}${ipa_app_store.var.target}.ipa
+ipa_app_store.var.options=
+ipa_app_store.var.signing=${IOS_DIST_SIGN}
+ipa_app_store.var.fileordir=-C ${TEMP_DIR} .

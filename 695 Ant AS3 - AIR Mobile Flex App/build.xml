@@ -6,6 +6,7 @@
 <!-- Creation : 2012-10-29 -->
 <!-- Modification : 2012-11-05 -->
 <!-- Modification : 2013-05-31 支持读取Flash Develop配置，支持独立打包 -->
+<!-- Modification : 2013-06-27 加入iOS调试功能；加入自动替换xml文件的extensions标签功能 -->
 <project name="mobilePackager" default="packswf">
 	<property file="build.properties" />
 	<taskdef resource="net/sf/antcontrib/antlib.xml"/>
@@ -93,6 +94,7 @@
 	<target name="replaceAPPXML">
 		<xmlproperty file="${APP_XML}" keeproot="false"/>
 		<echo>Replace the appid from ${id} to ${APP_ID} in ${APP_XML}.</echo>
+
 		<!-- 将application.xml中的appid替换成配置中的值 -->
 		<replaceregexp file="${APP_XML}" encoding="UTF-8">
 			<regexp pattern="(\x3Cid\x3E).*(\x3C/id\x3E)"/>
@@ -104,6 +106,46 @@
 			<regexp pattern="(\x3Ccontent\x3E).*(\x3C/content\x3E)"/>
 			<substitution expression="\1${swf.name}\2"/>
 		</replaceregexp>
+
+		<!-- 寻找extensions标签 -->
+		<regexp id="var.reg" pattern="(\x3Cextensions\x3E)(.*)(\x3C/extensions\x3E)"/>
+		<if>
+			<!-- 若提供了ANE_IDS，则xml文件中必须包含extensions标签 -->
+			<length string="${ANE_IDS}" when="greater" trim="true" length="0"/>
+			<then>
+				<loadfile srcFile="${APP_XML}" property="app.xml" encoding="UTF-8"/>
+				<if>
+					<not>
+						<matches string="${app.xml}" singleline="true">
+							<regexp refid="var.reg"/>
+						</matches>
+					</not>
+					<then>
+						<fail message="Can not find the extensions label in ${APP_XML}!"/>
+					</then>
+				</if>
+			</then>
+		</if>
+		<!-- 清空原来的extensions -->
+		<replaceregexp file="${APP_XML}" encoding="UTF-8" flags="s" byline="false">
+			<regexp refid="var.reg"/>
+			<substitution expression="\1\3"/>
+		</replaceregexp>
+		<if>
+			<isset property="ANE_IDS"/>
+			<then>
+				<!-- 循环加入当前的extensions -->
+				<for param="curaneid" list="${ANE_IDS}" delimiter=" ">
+					<sequential>
+						<replaceregexp file="${APP_XML}" encoding="UTF-8" flags="s" byline="false">
+							<!-- 尖括号不好替换，所以就用这个办法 \1\2是左右尖括号 -->
+							<regexp pattern="(\x3C)extensions(\x3E)(.*)(\x3C/extensions\x3E)"/>
+							<substitution expression="\1extensions\2\3\1extensionID\2@{curaneid}\1/extensionID\2\4"/>
+						</replaceregexp>
+					</sequential>
+				</for>
+			</then>
+		</if>
 	</target>
 
 	<!-- Copy the assets to temp directory. -->
@@ -123,12 +165,10 @@
 		<fail unless="var.type"/>
 		<fail unless="var.signing"/>
 		<fail unless="var.output"/>
+		<property name="var.adt" value="${FLEX_HOME}/lib/adt.jar"/>
+		<echo>${var.adt} -package -target ${var.type}${var.target} ${var.options} ${var.signing} ${var.output} ${APP_XML} ${var.fileordir} ${ANE_DIR_ARGS}</echo>
 		<mkdir dir="${DIST_DIR}"/>
-		<echo>Packager a ${var.type}${var.target}.</echo>
-		<echo>The signing is ${var.signing}.</echo>
-		<echo>The output file is ${var.output}.</echo>
-		<echo>The debug options are ${var.options}.</echo>
-		<java jar="${FLEX_HOME}/lib/adt.jar" fork="true" failonerror="true">
+		<java jar="${var.adt}" fork="true" failonerror="true">
 			<arg value="-package"/>
 			<arg line="-target ${var.type}${var.target}"/>
 			<arg line="${var.options}"/>
@@ -165,7 +205,7 @@
 		<java jar="${FLEX_HOME}/lib/adt.jar" fork="true" failonerror="true">
 			<arg value="-installApp"/>
 			<arg line="-platform ios"/>
-			<arg line="-package ${var.ipafile}"/>
+			<arg line="-package ${var.args}"/>
 		</java>
 	</target>
 
@@ -185,9 +225,56 @@
 
 	<!-- Package a APK file, install it to a Android device, then start it. -->
 	<target name="runAndroidDebug">
-		<echo>runAndroidDebug ${var.output}</echo>
-		<antcall target="packager"/>
+		<echo>runAndroidDebug</echo>
+		<if>
+			<contains string="${var.profile}" substring="ipa"/>
+			<then>
+				<fail message="Android can not to use the ipa profile!"/>
+			</then>
+		</if>
+		<propertycopy name="var.type" from="${var.profile}.var.type"/>
+		<propertycopy name="var.target" from="${var.profile}.var.target"/>
+		<propertycopy name="var.output" from="${var.profile}.var.output"/>
+		<propertycopy name="var.options" from="${var.profile}.var.options"/>
+		<propertycopy name="var.signing" from="${var.profile}.var.signing"/>
+		<propertycopy name="var.fileordir" from="${var.profile}.var.fileordir"/>
+		<antcall target="packager">
+			<param name="var.type" value="${var.type}"/>
+			<param name="var.target" value="${var.target}"/>
+			<param name="var.output" value="${var.output}"/>
+			<param name="var.options" value="${var.options}"/>
+			<param name="var.signing" value="${var.signing}"/>
+			<param name="var.fileordir" value="${var.fileordir}"/>
+		</antcall>
 		<antcall target="androidInstall">
+			<param name="var.args" value="${var.output}"/>
+		</antcall>
+	</target>
+
+	<!-- Package a IPA file, install it to a iOS device, then start it. -->
+	<target name="runIOSDebug">
+		<echo>runIOSDebug</echo>
+		<if>
+			<contains string="${var.profile}" substring="apk"/>
+			<then>
+				<fail message="iOS can not to use the apk profile!"/>
+			</then>
+		</if>
+		<propertycopy name="var.type" from="${var.profile}.var.type"/>
+		<propertycopy name="var.target" from="${var.profile}.var.target"/>
+		<propertycopy name="var.output" from="${var.profile}.var.output"/>
+		<propertycopy name="var.options" from="${var.profile}.var.options"/>
+		<propertycopy name="var.signing" from="${var.profile}.var.signing"/>
+		<propertycopy name="var.fileordir" from="${var.profile}.var.fileordir"/>
+		<antcall target="packager">
+			<param name="var.type" value="${var.type}"/>
+			<param name="var.target" value="${var.target}"/>
+			<param name="var.output" value="${var.output}"/>
+			<param name="var.options" value="${var.options}"/>
+			<param name="var.signing" value="${var.signing}"/>
+			<param name="var.fileordir" value="${var.fileordir}"/>
+		</antcall>
+		<antcall target="iosInstall">
 			<param name="var.args" value="${var.output}"/>
 		</antcall>
 	</target>
