@@ -70,6 +70,7 @@
 			<arg value="-l+=${LIB_DIR}"/>
 			<arg value="-l+=${ANE_DIR}/com.sanguo.ios.ane"/>
 			<arg value="-debug=${var.debug}"/>
+			<arg value="-swf-version=${var.swfversion}"/>
 			<arg value="-optimize=${var.optimize}"/>
 			<arg value="${main.file}"/>
 		</java>
