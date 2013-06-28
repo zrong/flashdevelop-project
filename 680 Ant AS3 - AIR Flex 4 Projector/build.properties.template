@@ -15,6 +15,7 @@ FLEX_FRAMEWORKS=${FLEX_HOME}/frameworks
 # ICON - icon files
 # TEMP - package temporary files
 # DIST - AIR release files
+# COPY_TO_BIN - the directories copy to the bin directory. Useing the Ant glob form. e.g. icon/**,config.xml. The Ant deletes them in BIN_DIR, and then copy them form ASSET_DIR to BIN_DIR.
 SRC_DIR=${basedir}/src
 CERT_DIR=${basedir}/cert
 BIN_DIR=${basedir}/bin
@@ -24,6 +25,7 @@ ASSET_DIR=${basedir}/asset
 ICON_DIR=${basedir}/asset/icon
 TEMP_DIR=${basedir}/temp
 DIST_DIR=${basedir}/dist
+COPY_TO_BIN_DIR=
 
 # About AIR application packaging
 # http://livedocs.adobe.com/flex/3/html/help.html?content=CommandLineTools_5.html#1035959
