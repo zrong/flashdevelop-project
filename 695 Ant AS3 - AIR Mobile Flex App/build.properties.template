@@ -72,8 +72,13 @@ APP_ID=air.$(PACKAGEDOT)$(PROJECTID)
 # Output packages
 DIST_NAME=${MAIN_NAME}
 
-# Debugging using a custom IP
-DEBUG_IP=192.168.18.22
+# Debugging using a custom IP/custom port and debug options
+#DEBUG_IP=192.168.18.22
+#DEBUG_PORT=7936
+DEBUG_IP=
+#DEBUG_PORT=
+DEBUG_OPTIONS=-connect ${DEBUG_IP}
+#DEBUG_OPTIONS=-listen ${DEBUG_PORT}
 
 # ADL debugging parameters
 SCREEN_SIZE=NexusOne
@@ -94,7 +99,7 @@ var.profile=apk_debug
 apk_debug.var.type=apk
 apk_debug.var.target=-debug
 apk_debug.var.output=${DIST_DIR}/${DIST_NAME}${apk_debug.var.target}.apk
-apk_debug.var.options=-connect ${DEBUG_IP}
+apk_debug.var.options=${DEBUG_OPTIONS}
 apk_debug.var.signing=${AND_DEV_SIGN}
 apk_debug.var.fileordir=-C ${TEMP_DIR} .
 
@@ -110,7 +115,7 @@ apk_captive_runtime.var.fileordir=-C ${TEMP_DIR} .
 ipa_debug_interpreter.var.type=ipa
 ipa_debug_interpreter.var.target=-debug-interpreter
 ipa_debug_interpreter.var.output=${DIST_DIR}/${DIST_NAME}${ipa_debug_interpreter.var.target}.ipa
-ipa_debug_interpreter.var.options=-connect ${DEBUG_IP} -sampler
+ipa_debug_interpreter.var.options=${DEBUG_OPTIONS} -sampler
 ipa_debug_interpreter.var.signing=${IOS_DEV_SIGN}
 ipa_debug_interpreter.var.fileordir=-C ${TEMP_DIR} .
 
